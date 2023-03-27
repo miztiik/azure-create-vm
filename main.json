@@ -5,13 +5,13 @@
     "_generator": {
       "name": "bicep",
       "version": "0.15.31.15270",
-      "templateHash": "14827066608031403017"
+      "templateHash": "1460756073463196287"
     }
   },
   "parameters": {
     "global_uniqueness": {
       "type": "string",
-      "defaultValue": "010"
+      "defaultValue": "001"
     },
     "enterprise_name": {
       "type": "string",
@@ -343,6 +343,9 @@
           "adminUsername": {
             "value": "[parameters('adminUsername')]"
           },
+          "adminPassword": {
+            "value": "YOUR-ADMIN-PASSWRD-GOES-HERE-1NSTEAD-OF-THIS-T3x$T"
+          },
           "ubuntuOSVersion": {
             "value": "[parameters('ubuntuOSVersion')]"
           }
@@ -354,7 +357,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.15.31.15270",
-              "templateHash": "3308900290530202335"
+              "templateHash": "7521982223572698754"
             }
           },
           "parameters": {
@@ -410,12 +413,10 @@
               "defaultValue": "Standard_D2s_v3"
             },
             "adminUsername": {
-              "type": "string",
-              "defaultValue": "miztiik"
+              "type": "string"
             },
             "adminPassword": {
-              "type": "securestring",
-              "defaultValue": "pKonT@#$aj"
+              "type": "securestring"
             },
             "authType": {
               "type": "string",

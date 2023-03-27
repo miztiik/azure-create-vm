@@ -66,7 +66,7 @@ module r_vm 'modules/vm/create_vm.bicep' = {
     vmNamePrefix: vmNamePrefix
     vmSubnetName: vmSubnetName
     adminUsername: adminUsername
-    adminPassword:'YOUR-ADMIN-PASSWORD-GOES-HERE-INSTEAD-OF-THIS-TEXT'
+    adminPassword:'YOUR-ADMIN-PASSWRD-GOES-HERE-1NSTEAD-OF-THIS-T3x$T'
     ubuntuOSVersion:ubuntuOSVersion
     // publicKey: pubkeydata
     // script64: script64
