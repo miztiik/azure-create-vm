@@ -1,0 +1,751 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.15.31.15270",
+      "templateHash": "14827066608031403017"
+    }
+  },
+  "parameters": {
+    "global_uniqueness": {
+      "type": "string",
+      "defaultValue": "010"
+    },
+    "enterprise_name": {
+      "type": "string",
+      "defaultValue": "Miztiik_Enterprises"
+    },
+    "rgNamePrefix": {
+      "type": "string",
+      "defaultValue": "[parameters('enterprise_name')]"
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[deployment().location]"
+    },
+    "vnetNamePrefix": {
+      "type": "string",
+      "defaultValue": "dataGenSwarm"
+    },
+    "vmNamePrefix": {
+      "type": "string",
+      "defaultValue": "m-web-srv"
+    },
+    "vmSubnetName": {
+      "type": "string",
+      "defaultValue": "webSubnet01"
+    },
+    "adminUsername": {
+      "type": "string",
+      "defaultValue": "miztiik"
+    },
+    "ubuntuOSVersion": {
+      "type": "string",
+      "defaultValue": "Ubuntu-2204"
+    },
+    "dateNow": {
+      "type": "string",
+      "defaultValue": "[utcNow('yyyy-MM-dd-hh-mm')]"
+    }
+  },
+  "variables": {
+    "commonTags": {
+      "owner": "Mysqitue",
+      "github_profile": "https://github.com/miztiik/about-me",
+      "LastDeployed": "[parameters('dateNow')]"
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2020-10-01",
+      "name": "[format('{0}_{1}', parameters('rgNamePrefix'), parameters('global_uniqueness'))]",
+      "location": "[deployment().location]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "rgNamePrefix": {
+            "value": "[parameters('rgNamePrefix')]"
+          },
+          "global_uniqueness": {
+            "value": "[parameters('global_uniqueness')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "commonTags": {
+            "value": "[variables('commonTags')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.15.31.15270",
+              "templateHash": "8705268283987423628"
+            }
+          },
+          "parameters": {
+            "global_uniqueness": {
+              "type": "string"
+            },
+            "location": {
+              "type": "string",
+              "defaultValue": "[deployment().location]"
+            },
+            "commonTags": {
+              "type": "object"
+            },
+            "rgNamePrefix": {
+              "type": "string"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Resources/resourceGroups",
+              "apiVersion": "2021-04-01",
+              "name": "[format('{0}_{1}', parameters('rgNamePrefix'), parameters('global_uniqueness'))]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('commonTags')]"
+            }
+          ],
+          "outputs": {
+            "rgName": {
+              "type": "string",
+              "value": "[format('{0}_{1}', parameters('rgNamePrefix'), parameters('global_uniqueness'))]"
+            },
+            "rgId": {
+              "type": "string",
+              "value": "[subscriptionResourceId('Microsoft.Resources/resourceGroups', format('{0}_{1}', parameters('rgNamePrefix'), parameters('global_uniqueness')))]"
+            },
+            "stringOutput": {
+              "type": "string",
+              "value": "[deployment().name]"
+            },
+            "integerOutput": {
+              "type": "int",
+              "value": "[length(environment().authentication.audiences)]"
+            },
+            "booleanOutput": {
+              "type": "bool",
+              "value": "[contains(deployment().name, 'Miztiik')]"
+            },
+            "arrayOutput": {
+              "type": "array",
+              "value": "[environment().authentication.audiences]"
+            },
+            "objectOutput": {
+              "type": "object",
+              "value": "[subscription()]"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2020-10-01",
+      "name": "[format('{0}_{1}_Vnet', parameters('vnetNamePrefix'), parameters('global_uniqueness'))]",
+      "resourceGroup": "[format('{0}_{1}', parameters('rgNamePrefix'), parameters('global_uniqueness'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "global_uniqueness": {
+            "value": "[parameters('global_uniqueness')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "vnetNamePrefix": {
+            "value": "[parameters('vnetNamePrefix')]"
+          },
+          "natGateway": {
+            "value": false
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.15.31.15270",
+              "templateHash": "10507435674721115301"
+            }
+          },
+          "parameters": {
+            "global_uniqueness": {
+              "type": "string"
+            },
+            "natGateway": {
+              "type": "bool",
+              "defaultValue": false
+            },
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]"
+            },
+            "vnetNamePrefix": {
+              "type": "string"
+            },
+            "vnetNameSuffix": {
+              "type": "string",
+              "defaultValue": "[format('Vnet_{0}', parameters('global_uniqueness'))]"
+            },
+            "vnetAddPrefixes": {
+              "type": "object",
+              "defaultValue": {
+                "addressPrefixes": [
+                  "10.0.0.0/16"
+                ]
+              }
+            },
+            "webSubnet01Cidr": {
+              "type": "string",
+              "defaultValue": "10.0.0.0/24"
+            },
+            "webSubnet02Cidr": {
+              "type": "string",
+              "defaultValue": "10.0.1.0/24"
+            },
+            "appSubnet01Cidr": {
+              "type": "string",
+              "defaultValue": "10.0.2.0/24"
+            },
+            "appSubnet02Cidr": {
+              "type": "string",
+              "defaultValue": "10.0.3.0/24"
+            },
+            "dbSubnet01Cidr": {
+              "type": "string",
+              "defaultValue": "10.0.4.0/24"
+            },
+            "dbSubnet02Cidr": {
+              "type": "string",
+              "defaultValue": "10.0.5.0/24"
+            }
+          },
+          "variables": {
+            "commonTags": "[resourceGroup().tags]"
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Network/virtualNetworks",
+              "apiVersion": "2021-05-01",
+              "name": "[format('{0}_{1}', parameters('vnetNamePrefix'), parameters('vnetNameSuffix'))]",
+              "location": "[parameters('location')]",
+              "tags": "[variables('commonTags')]",
+              "properties": {
+                "addressSpace": "[parameters('vnetAddPrefixes')]",
+                "subnets": [
+                  {
+                    "name": "webSubnet01",
+                    "properties": {
+                      "addressPrefix": "[parameters('webSubnet01Cidr')]"
+                    }
+                  },
+                  {
+                    "name": "webSubnet02",
+                    "properties": {
+                      "addressPrefix": "[parameters('webSubnet02Cidr')]"
+                    }
+                  },
+                  {
+                    "name": "appSubnet01",
+                    "properties": {
+                      "addressPrefix": "[parameters('appSubnet01Cidr')]"
+                    }
+                  },
+                  {
+                    "name": "appSubnet02",
+                    "properties": {
+                      "addressPrefix": "[parameters('appSubnet02Cidr')]"
+                    }
+                  },
+                  {
+                    "name": "dbSubnet01",
+                    "properties": {
+                      "addressPrefix": "[parameters('dbSubnet01Cidr')]"
+                    }
+                  },
+                  {
+                    "name": "dbSubnet02",
+                    "properties": {
+                      "addressPrefix": "[parameters('dbSubnet02Cidr')]"
+                    }
+                  }
+                ]
+              }
+            }
+          ],
+          "outputs": {
+            "vnetId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Network/virtualNetworks', format('{0}_{1}', parameters('vnetNamePrefix'), parameters('vnetNameSuffix')))]"
+            },
+            "vnetName": {
+              "type": "string",
+              "value": "[format('{0}_{1}', parameters('vnetNamePrefix'), parameters('vnetNameSuffix'))]"
+            },
+            "vnetSubnets": {
+              "type": "array",
+              "value": "[reference(resourceId('Microsoft.Network/virtualNetworks', format('{0}_{1}', parameters('vnetNamePrefix'), parameters('vnetNameSuffix'))), '2021-05-01').subnets]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[subscriptionResourceId('Microsoft.Resources/deployments', format('{0}_{1}', parameters('rgNamePrefix'), parameters('global_uniqueness')))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2020-10-01",
+      "name": "[format('{0}_{1}_Vm', parameters('vmNamePrefix'), parameters('global_uniqueness'))]",
+      "resourceGroup": "[format('{0}_{1}', parameters('rgNamePrefix'), parameters('global_uniqueness'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "global_uniqueness": {
+            "value": "[parameters('global_uniqueness')]"
+          },
+          "rgName": {
+            "value": "[format('{0}_{1}', parameters('rgNamePrefix'), parameters('global_uniqueness'))]"
+          },
+          "vnetName": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('{0}_{1}', parameters('rgNamePrefix'), parameters('global_uniqueness'))), 'Microsoft.Resources/deployments', format('{0}_{1}_Vnet', parameters('vnetNamePrefix'), parameters('global_uniqueness'))), '2020-10-01').outputs.vnetName.value]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "isLinux": {
+            "value": true
+          },
+          "vmNamePrefix": {
+            "value": "[parameters('vmNamePrefix')]"
+          },
+          "vmSubnetName": {
+            "value": "[parameters('vmSubnetName')]"
+          },
+          "adminUsername": {
+            "value": "[parameters('adminUsername')]"
+          },
+          "ubuntuOSVersion": {
+            "value": "[parameters('ubuntuOSVersion')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.15.31.15270",
+              "templateHash": "3308900290530202335"
+            }
+          },
+          "parameters": {
+            "rgName": {
+              "type": "string"
+            },
+            "global_uniqueness": {
+              "type": "string"
+            },
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]"
+            },
+            "isLinux": {
+              "type": "bool",
+              "defaultValue": true
+            },
+            "isWindows": {
+              "type": "bool",
+              "defaultValue": false
+            },
+            "vnetName": {
+              "type": "string"
+            },
+            "vmSubnetName": {
+              "type": "string"
+            },
+            "vmNamePrefix": {
+              "type": "string"
+            },
+            "vmName": {
+              "type": "string",
+              "defaultValue": "[format('{0}-{1}', parameters('vmNamePrefix'), parameters('global_uniqueness'))]"
+            },
+            "dnsLabelPrefix": {
+              "type": "string",
+              "defaultValue": "[toLower(format('{0}-{1}-{2}', parameters('vmNamePrefix'), parameters('global_uniqueness'), uniqueString(resourceGroup().id, parameters('vmName'))))]"
+            },
+            "publicIpName": {
+              "type": "string",
+              "defaultValue": "[format('{0}-{1}PublicIp', parameters('vmNamePrefix'), parameters('global_uniqueness'))]"
+            },
+            "publicIPAllocationMethod": {
+              "type": "string",
+              "defaultValue": "Dynamic"
+            },
+            "publicIpSku": {
+              "type": "string",
+              "defaultValue": "Basic"
+            },
+            "vmSize": {
+              "type": "string",
+              "defaultValue": "Standard_D2s_v3"
+            },
+            "adminUsername": {
+              "type": "string",
+              "defaultValue": "miztiik"
+            },
+            "adminPassword": {
+              "type": "securestring",
+              "defaultValue": "pKonT@#$aj"
+            },
+            "authType": {
+              "type": "string",
+              "defaultValue": "password",
+              "allowedValues": [
+                "sshPublicKey",
+                "password"
+              ],
+              "metadata": {
+                "description": "VM auth"
+              }
+            },
+            "winOSVersion": {
+              "type": "string",
+              "defaultValue": "2022-datacenter-azure-edition"
+            },
+            "ubuntuOSVersion": {
+              "type": "string",
+              "defaultValue": "Ubuntu-2204"
+            }
+          },
+          "variables": {
+            "$fxv#0": "#!/bin/bash\nset -ex\nset -o pipefail\n\n# version: 26Mar2023\n\n##################################################\n#############     SET GLOBALS     ################\n##################################################\n\nREPO_NAME=\"create-azure-vm\"\n\nGIT_REPO_URL=\"https://github.com/miztiik/$REPO_NAME.git\"\n\nAPP_DIR=\"/var/$REPO_NAME\"\n\nLOG_FILE=\"/var/log/miztiik-automation-bootstrap.log\"\n\n# https://learn.microsoft.com/en-us/azure/virtual-machines/linux/tutorial-automate-vm-deployment\n\ninstruction()\n{\n  echo \"usage: ./build.sh package <stage> <region>\"\n  echo \"\"\n  echo \"/build.sh deploy <stage> <region> <pkg_dir>\"\n  echo \"\"\n  echo \"/build.sh test-<test_type> <stage>\"\n}\n\nechoerror() {\n    printf \"${RC} * ERROR${EC}: $@\\n\" 1>&2;\n}\n\nassume_role() {\n  if [ -n \"$DEPLOYER_ROLE_ARN\" ]; then\n    echo \"Assuming role $DEPLOYER_ROLE_ARN ...\"\n  fi\n}\n\nunassume_role() {\n  unset TOKEN\n}\n\nfunction clone_git_repo(){\n    install_libs\n    # mkdir -p /var/\n    cd /var\n    git clone $GIT_REPO_URL\n\n}\n\nfunction add_env_vars(){\n    IMDS=`curl -s -H Metadata:true --noproxy \"*\" \"http://169.254.169.254/metadata/instance?api-version=2021-02-01\"`\n}\n\nfunction install_libs(){\n    # Prepare the server for python3\n    yum -y install python-pip python3 git\n    yum -y install jq\n}\n\nfunction install_nodejs(){\n    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.34.0/install.sh | bash\n    . ~/.nvm/nvm.sh\n    nvm install node\n    node -e \"console.log('Running Node.js ' + process.version)\"\n}\n\nfunction check_execution(){\n    echo \"hello\" >/tmp/miztiik.log\n}\n\ncheck_execution                 | tee \"${LOG_FILE}\"\ninstall_libs                    | tee \"${LOG_FILE}\"\n\n\n\n",
+            "saName": "[uniqueString(resourceGroup().id)]",
+            "customScriptData": "[base64(variables('$fxv#0'))]",
+            "ubuntuImgRef": {
+              "Ubuntu-2204": {
+                "publisher": "Canonical",
+                "offer": "0001-com-ubuntu-server-jammy",
+                "sku": "22_04-lts-gen2",
+                "version": "latest"
+              }
+            },
+            "centosImgRef": {
+              "publisher": "OpenLogic",
+              "offer": "CentOS",
+              "sku": "7.5",
+              "version": "latest"
+            },
+            "redhatImgRef": {
+              "publisher": "RedHat",
+              "offer": "RHEL",
+              "sku": "7.4",
+              "version": "latest"
+            },
+            "LinuxConfiguration": {
+              "disablePasswordAuthentication": true,
+              "ssh": {
+                "publickeys": [
+                  {
+                    "path": "[format('/home/{0}/.ssh/authorized_keys', parameters('adminUsername'))]",
+                    "keyData": "[parameters('adminPassword')]"
+                  }
+                ]
+              }
+            },
+            "commonTags": "[resourceGroup().tags]"
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Storage/storageAccounts",
+              "apiVersion": "2022-05-01",
+              "name": "[variables('saName')]",
+              "location": "[parameters('location')]",
+              "sku": {
+                "name": "Standard_LRS"
+              },
+              "kind": "StorageV2"
+            },
+            {
+              "type": "Microsoft.Network/publicIPAddresses",
+              "apiVersion": "2022-05-01",
+              "name": "[parameters('publicIpName')]",
+              "location": "[parameters('location')]",
+              "tags": "[variables('commonTags')]",
+              "sku": {
+                "name": "[parameters('publicIpSku')]"
+              },
+              "properties": {
+                "publicIPAllocationMethod": "[parameters('publicIPAllocationMethod')]",
+                "publicIPAddressVersion": "IPv4",
+                "deleteOption": "Delete",
+                "dnsSettings": {
+                  "domainNameLabel": "[parameters('dnsLabelPrefix')]"
+                }
+              }
+            },
+            {
+              "type": "Microsoft.Network/networkSecurityGroups",
+              "apiVersion": "2021-05-01",
+              "name": "webSg",
+              "location": "[parameters('location')]",
+              "tags": "[variables('commonTags')]",
+              "properties": {
+                "securityRules": [
+                  {
+                    "name": "AllowInboundSsh",
+                    "properties": {
+                      "priority": 250,
+                      "protocol": "Tcp",
+                      "access": "Allow",
+                      "direction": "Inbound",
+                      "sourceAddressPrefix": "*",
+                      "sourcePortRange": "*",
+                      "destinationAddressPrefix": "*",
+                      "destinationPortRange": "22"
+                    }
+                  },
+                  {
+                    "name": "HTTP",
+                    "properties": {
+                      "priority": 200,
+                      "protocol": "Tcp",
+                      "access": "Allow",
+                      "direction": "Inbound",
+                      "sourceAddressPrefix": "*",
+                      "sourcePortRange": "*",
+                      "destinationAddressPrefix": "*",
+                      "destinationPortRange": "80"
+                    }
+                  },
+                  {
+                    "name": "Outbound_Allow_All",
+                    "properties": {
+                      "priority": 300,
+                      "protocol": "*",
+                      "access": "Allow",
+                      "direction": "Outbound",
+                      "sourceAddressPrefix": "*",
+                      "sourcePortRange": "*",
+                      "destinationAddressPrefix": "*",
+                      "destinationPortRange": "*"
+                    }
+                  },
+                  {
+                    "name": "AzureResourceManager",
+                    "properties": {
+                      "protocol": "Tcp",
+                      "sourcePortRange": "*",
+                      "destinationPortRange": "443",
+                      "sourceAddressPrefix": "*",
+                      "destinationAddressPrefix": "AzureResourceManager",
+                      "access": "Allow",
+                      "priority": 160,
+                      "direction": "Outbound"
+                    }
+                  },
+                  {
+                    "name": "AzureStorageAccount",
+                    "properties": {
+                      "protocol": "Tcp",
+                      "sourcePortRange": "*",
+                      "destinationPortRange": "443",
+                      "sourceAddressPrefix": "*",
+                      "destinationAddressPrefix": "[format('Storage.{0}', parameters('location'))]",
+                      "access": "Allow",
+                      "priority": 170,
+                      "direction": "Outbound"
+                    }
+                  },
+                  {
+                    "name": "AzureFrontDoor",
+                    "properties": {
+                      "protocol": "Tcp",
+                      "sourcePortRange": "*",
+                      "destinationPortRange": "443",
+                      "sourceAddressPrefix": "*",
+                      "destinationAddressPrefix": "AzureFrontDoor.FrontEnd",
+                      "access": "Allow",
+                      "priority": 180,
+                      "direction": "Outbound"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "type": "Microsoft.Network/networkInterfaces",
+              "apiVersion": "2022-05-01",
+              "name": "vm01Nic01",
+              "location": "[parameters('location')]",
+              "tags": "[variables('commonTags')]",
+              "properties": {
+                "ipConfigurations": [
+                  {
+                    "name": "ipconfig1",
+                    "properties": {
+                      "subnet": {
+                        "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('vmSubnetName'))]"
+                      },
+                      "privateIPAllocationMethod": "Dynamic",
+                      "publicIPAddress": {
+                        "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIpName'))]"
+                      }
+                    }
+                  }
+                ],
+                "networkSecurityGroup": {
+                  "id": "[resourceId('Microsoft.Network/networkSecurityGroups', 'webSg')]"
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIpName'))]",
+                "[resourceId('Microsoft.Network/networkSecurityGroups', 'webSg')]"
+              ]
+            },
+            {
+              "type": "Microsoft.Compute/virtualMachines",
+              "apiVersion": "2022-03-01",
+              "name": "[parameters('vmName')]",
+              "location": "[parameters('location')]",
+              "tags": "[variables('commonTags')]",
+              "identity": {
+                "type": "SystemAssigned"
+              },
+              "properties": {
+                "hardwareProfile": {
+                  "vmSize": "[parameters('vmSize')]"
+                },
+                "osProfile": {
+                  "computerName": "[parameters('vmName')]",
+                  "adminUsername": "[parameters('adminUsername')]",
+                  "adminPassword": "[parameters('adminPassword')]",
+                  "linuxConfiguration": "[if(equals(parameters('authType'), 'password'), null(), variables('LinuxConfiguration'))]",
+                  "customData": "[variables('customScriptData')]"
+                },
+                "storageProfile": {
+                  "imageReference": {
+                    "publisher": "RedHat",
+                    "offer": "RHEL",
+                    "sku": "91-gen2",
+                    "version": "latest"
+                  },
+                  "osDisk": {
+                    "createOption": "FromImage",
+                    "name": "[format('osDiskFor_{0}', parameters('vmName'))]",
+                    "caching": "ReadWrite",
+                    "deleteOption": "Delete",
+                    "diskSizeGB": 128,
+                    "managedDisk": {
+                      "storageAccountType": "StandardSSD_LRS"
+                    }
+                  }
+                },
+                "networkProfile": {
+                  "networkInterfaces": [
+                    {
+                      "id": "[resourceId('Microsoft.Network/networkInterfaces', 'vm01Nic01')]"
+                    }
+                  ]
+                },
+                "diagnosticsProfile": {
+                  "bootDiagnostics": {
+                    "enabled": true,
+                    "storageUri": "[reference(resourceId('Microsoft.Storage/storageAccounts', variables('saName')), '2022-05-01').primaryEndpoints.blob]"
+                  }
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('saName'))]",
+                "[resourceId('Microsoft.Network/networkInterfaces', 'vm01Nic01')]"
+              ]
+            },
+            {
+              "condition": "[parameters('isLinux')]",
+              "type": "Microsoft.Compute/virtualMachines/extensions",
+              "apiVersion": "2021-07-01",
+              "name": "[format('{0}/{1}', parameters('vmName'), 'AzureMonitorLinuxAgent')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "publisher": "Microsoft.Azure.Monitor",
+                "type": "AzureMonitorLinuxAgent",
+                "enableAutomaticUpgrade": true,
+                "autoUpgradeMinorVersion": true,
+                "typeHandlerVersion": "1.25",
+                "settings": {
+                  "identifier-name": "mi_res_id",
+                  "identifier-value": "[reference(resourceId('Microsoft.Compute/virtualMachines', parameters('vmName')), '2022-03-01', 'full').identity.principalId]"
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]"
+              ]
+            },
+            {
+              "condition": "[parameters('isWindows')]",
+              "type": "Microsoft.Compute/virtualMachines/extensions",
+              "apiVersion": "2021-11-01",
+              "name": "[format('{0}/{1}', parameters('vmName'), 'AzureMonitorWindowsAgent')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "publisher": "Microsoft.Azure.Monitor",
+                "type": "AzureMonitorWindowsAgent",
+                "typeHandlerVersion": "1.0",
+                "autoUpgradeMinorVersion": true,
+                "enableAutomaticUpgrade": true
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]"
+              ]
+            }
+          ],
+          "outputs": {
+            "webGenHostName": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIpName')), '2022-05-01').dnsSettings.fqdn]"
+            },
+            "adminUsername": {
+              "type": "string",
+              "value": "[parameters('adminUsername')]"
+            },
+            "sshCommand": {
+              "type": "string",
+              "value": "[format('ssh {0}@{1}', parameters('adminUsername'), reference(resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIpName')), '2022-05-01').dnsSettings.fqdn)]"
+            },
+            "webGenHostId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]"
+            },
+            "webGenHostPrivateIP": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.Network/networkInterfaces', 'vm01Nic01'), '2022-05-01').ipConfigurations[0].properties.privateIPAddress]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[subscriptionResourceId('Microsoft.Resources/deployments', format('{0}_{1}', parameters('rgNamePrefix'), parameters('global_uniqueness')))]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('{0}_{1}', parameters('rgNamePrefix'), parameters('global_uniqueness'))), 'Microsoft.Resources/deployments', format('{0}_{1}_Vnet', parameters('vnetNamePrefix'), parameters('global_uniqueness')))]"
+      ]
+    }
+  ]
+}
