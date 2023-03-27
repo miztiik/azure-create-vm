@@ -70,7 +70,7 @@ This repository holds the bicep code to deploy,
      sh deploy.sh
      ```
 
-     After successfully deploying the stack, Check the `Outputs` section of the stack for the
+     After successfully deploying the stack, Check the `Outputs` section of the stack for the resources.
 
 
 5. ## 🔬 Testing the solution
